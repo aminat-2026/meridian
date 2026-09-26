@@ -28,4 +28,18 @@ describe("applyOperationCosts", () => {
     const result = applyOperationCosts({ grossResult, networkOperations: 99n }, ZERO_COST_SCHEDULE);
     expect(result.netResult.raw).toBe(grossResult.raw);
   });
+
+  it("accrues the configured network fee for every operation", () => {
+    const result = applyOperationCosts(
+      { grossResult: fixed("10"), networkOperations: 4n },
+      {
+        swapFeeRate: fixed("0"),
+        borrowSpreadRate: fixed("0"),
+        networkFeePerOperation: fixed("0.25"),
+      },
+    );
+
+    expect(result.networkFee.toString()).toBe("1");
+    expect(result.netResult.toString()).toBe("9");
+  });
 });
